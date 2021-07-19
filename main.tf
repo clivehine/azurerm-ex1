@@ -23,23 +23,23 @@ resource "azurerm_resource_group" "vm_group" {
 resource "azurerm_virtual_network" "vm_network" {
   name                = "VirtualMachineNetwork"
   address_space       = ["10.0.0.0/22"]
-  resource_group_name = "VirtualMachineGroup"
-  location            = "UK South"
+  resource_group_name = azurerm_resource_group.vm_group.name
+  location            = azurerm_resource_group.vm_group.location
 }
 
 # Create network subnet
 resource "azurerm_subnet" "vm_subnet" {
   name                 = "VirtualMachineSubnet"
-  resource_group_name  = "VirtualMachineGroup"
-  virtual_network_name = "VirtualMachineNetwork"
+  resource_group_name  = azurerm_resource_group.vm_group.name
+  virtual_network_name = azurerm_virtual_network.vm_network.name
   address_prefixes     = ["10.0.0.0/24"]
 }
 
 # Create network adapter
 resource "azurerm_network_interface" "vm_network_interface" {
   name                = "VirtualMachineNetworkInterface"
-  location            = "UK South"
-  resource_group_name = "VirtualMachineGroup"
+  location            = azurerm_resource_group.vm_group.location
+  resource_group_name = azurerm_resource_group.vm_group.name
 
   ip_configuration {
     name                          = "ipconfig1"
@@ -51,8 +51,8 @@ resource "azurerm_network_interface" "vm_network_interface" {
 # Create virtual machine
 resource "azurerm_windows_virtual_machine" "virtual_machine" {
   name                  = "VirtualMachine"
-  resource_group_name   = "VirtualMachineGroup"
-  location              = "UK South"
+  resource_group_name   = azurerm_resource_group.vm_group.name
+  location              = azurerm_resource_group.vm_group.location
   size                  = "Standard_B1s"
   admin_username        = "Wesley"
   admin_password        = "sdfhq48SDFdf224sf"
